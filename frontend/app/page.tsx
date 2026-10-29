@@ -2,17 +2,33 @@ import Image from "next/image";
 import { Suspense } from "react";
 
 import Content from "@/components/Content";
+import { getContent, type ContentItem } from "@/lib/content";
 
 async function ContentList() {
-  // TODO: Fetch the data from the backend (http://localhost:8000/data)
+  let items: ContentItem[];
+  try {
+    items = await getContent();
+  } catch {
+    return (
+      <p role="alert">
+        Could not load the content. Check that the backend is running on
+        http://localhost:8000.
+      </p>
+    );
+  }
 
-  // Each piece of content in the list should have its own Content component
-  return <Content />;
+  return (
+    <div className="flex w-full flex-col gap-6">
+      {items.map((item) => (
+        <Content key={item.question} item={item} />
+      ))}
+    </div>
+  );
 }
 
 export default function Home() {
   return (
-    <main className="mx-auto flex max-w-3xl flex-col items-center gap-8 p-8">
+    <main className="mx-auto flex max-w-3xl flex-col items-center gap-8 p-4 sm:p-8">
       <div className="flex flex-col items-center text-center">
         <Image
           src="/logo.png"
